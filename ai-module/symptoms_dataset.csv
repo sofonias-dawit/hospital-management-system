@@ -1,0 +1,17 @@
+Fever,Cough,Fatigue,Headache,Runny Nose,Disease
+1,1,1,0,1,Flu
+1,1,0,1,0,Covid-19
+0,0,1,1,0,Migraine
+1,0,1,0,0,Common Cold
+1,1,1,1,1,Flu
+1,1,1,1,0,Covid-19
+0,0,0,1,0,Migraine
+1,0,0,0,1,Common Cold
+1,1,0,0,1,Flu
+1,1,1,0,0,Covid-19
+0,0,1,1,1,Migraine
+0,1,1,0,1,Common Cold
+1,0,1,1,1,Flu
+1,1,0,1,1,Covid-19
+0,0,1,1,0,Migraine
+1,0,1,0,1,Common Cold
