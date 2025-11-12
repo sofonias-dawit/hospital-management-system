@@ -53,7 +53,7 @@ Follow these instructions to set up and run the project on your local machine.
 
 1.  **Clone the Repository**
     ```bash
-    git clone https://github.com/YourUsername/your-repo-name.git
+    git clone https://github.com/sofonias-dawit/hospital-management-system.git
     cd your-repo-name
     ```
 
