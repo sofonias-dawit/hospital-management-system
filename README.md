@@ -1,70 +1,134 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 🏥 HealthEase - A Comprehensive Hospital Management System
 
-## Available Scripts
+A full-stack, enterprise-grade Hospital Management System (HMS) designed to streamline hospital operations. Built with a robust Django REST Framework backend and a dynamic React.js frontend, this application provides a complete, role-based solution for managing patients, staff, and hospital workflows.
 
-In the project directory, you can run:
+## ✨ Key Features
 
-### `npm start`
+- **Role-Based Access Control**: Secure, distinct dashboards and functionalities for all major roles:
+  - **Admin**: Manages users, departments, and views system-wide analytics.
+  - **Doctor**: Manages appointments, views assigned patients, updates medical records, and writes prescriptions.
+  - **Patient**: Books appointments, views personal medical history (records & prescriptions), and uses an AI Symptom Checker.
+  - **Receptionist**: Manages all appointments across the hospital and handles patient billing.
+  - **Nurse**: Manages ward and bed assignments, including admitting and discharging patients.
+- **Interactive UI**: A clean, responsive interface built with React and Tailwind CSS, featuring a persistent sidebar for easy navigation.
+- **Dynamic Data Management**: Live search, interactive modals for creating/editing data, and real-time updates without page reloads.
+- **AI Integration**: A built-in Symptom Checker that uses a machine learning model to predict potential conditions based on user input.
+- **Secure Authentication**: Backend API protected by JSON Web Tokens (JWT) for secure communication.
+- **Full CRUD Functionality**: Administrators have complete Create, Read, Update, and Delete capabilities for users and departments directly from the UI.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Backend**:
+  - Python 3.11+
+  - Django & Django REST Framework
+  - MySQL (Database)
+  - `djangorestframework-simplejwt` (for JWT Authentication)
+- **Frontend**:
+  - React.js 18+
+  - React Router
+  - Axios (for API calls)
+  - Tailwind CSS (for styling)
+  - Recharts (for analytics charts)
+  - Heroicons (for UI icons)
+- **AI Module**:
+  - Scikit-learn
+  - Pandas & NumPy
+- **Deployment (Optional)**:
+  - Docker & Docker Compose
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Getting Started
 
-### `npm run build`
+Follow these instructions to set up and run the project on your local machine.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Python 3.9+ and Pip
+- Node.js and npm
+- A running MySQL Server (you can use the MySQL from a package like WAMP/XAMPP)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Backend Setup (Django)
 
-### `npm run eject`
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/YourUsername/your-repo-name.git
+    cd your-repo-name
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+2.  **Navigate to the Backend & Create Virtual Environment**
+    ```bash
+    cd backend
+    python -m venv venv
+    venv\Scripts\activate  # On Windows
+    # source venv/bin/activate  # On macOS/Linux
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3.  **Install Dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *Note: If `requirements.txt` does not exist, generate it with `pip freeze > requirements.txt`.*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+4.  **Set Up the Database**
+    - Ensure your MySQL server is running.
+    - Create a new database named `HospitalDB`: `CREATE DATABASE HospitalDB;`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+5.  **Configure Environment Variables**
+    - In the `backend` directory, create a file named `.env`.
+    - Copy the contents from `backend/.env.example` (if it exists) or use the template below.
+    - **Fill in your actual database credentials.**
+    ```env
+    SECRET_KEY='a-very-strong-and-secret-key-that-you-generate'
+    DEBUG=True
+    DB_NAME='HospitalDB'
+    DB_USER='your_mysql_user'      # e.g., 'root' for WAMP
+    DB_PASSWORD='your_mysql_password'  # e.g., leave empty for WAMP
+    DB_HOST='127.0.0.1'
+    DB_PORT='3306'
+    ```
 
-## Learn More
+6.  **Run Database Migrations**
+    ```bash
+    python manage.py migrate
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+7.  **Create Your Administrator Account**
+    This command will prompt you to create your own username and password for the admin dashboard.
+    ```bash
+    python manage.py createsuperuser
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+8.  **Run the Backend Server**
+    ```bash
+    python manage.py runserver
+    ```
+    The backend will now be running at `http://127.0.0.1:8000`. Keep this terminal open.
 
-### Code Splitting
+### 2. Frontend Setup (React)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1.  **Open a new terminal**.
+2.  **Navigate to the Frontend Directory**
+    ```bash
+    cd frontend
+    ```
 
-### Analyzing the Bundle Size
+3.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4.  **Run the Frontend Server**
+    ```bash
+    npm start
+    ```
+    The application will automatically open in your browser at `http://localhost:3000`.
 
-### Making a Progressive Web App
+### 3. AI Model Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The project comes with a pre-trained AI model. If you want to retrain it:
+1.  Navigate to the `ai-module` directory: `cd ../ai-module`.
+2.  Install dependencies: `pip install scikit-learn pandas numpy`.
+3.  Run the training script: `python train_model.py`.
+4.  Manually copy the newly generated `.joblib` files into the `backend/ml_models/` directory.

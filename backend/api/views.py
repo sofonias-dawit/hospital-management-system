@@ -1,3 +1,4 @@
+
 # backend/api/views.py
 
 from rest_framework import viewsets, generics
@@ -7,16 +8,23 @@ from .models import *
 from .serializers import *
 from .permissions import IsAdmin, IsAdminOrReadOnly, IsDoctor, IsStaffOrReadOnly 
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter # 1. Import SearchFilter
 
-# --- IMPORTS FOR AI (including the missing 'os') ---
+# --- IMPORTS FOR AI ---
 import joblib
 import os
 import numpy as np
 from django.conf import settings
-from rest_framework.parsers import MultiPartParser, FormParser
 
+# --- UPDATE THIS VIEWSET ---
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all(); serializer_class = DepartmentSerializer; permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    filter_backends = [SearchFilter] # 2. Add the filter backend
+    search_fields = ['name', 'description'] # 3. Specify which fields to search on
+
+# ... (The rest of the file remains exactly the same) ...
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all(); serializer_class = PatientSerializer; permission_classes = [IsAuthenticated] 
 class DoctorViewSet(viewsets.ModelViewSet):
@@ -31,7 +39,6 @@ class NurseViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list': return NurseListSerializer
         return NurseSerializer
-    
 class ReceptionistViewSet(viewsets.ModelViewSet):
     queryset = Receptionist.objects.all(); serializer_class = ReceptionistSerializer; permission_classes = [IsAdmin]
 class AppointmentViewSet(viewsets.ModelViewSet):
@@ -76,7 +83,6 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
         serializer.save(doctor=doctor)
 class LabTestViewSet(viewsets.ModelViewSet):
     queryset = LabTest.objects.all(); serializer_class = LabTestSerializer; permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser] 
     def get_queryset(self):
         user = self.request.user
         if user.role == 'Admin': return LabTest.objects.all()
@@ -89,6 +95,7 @@ class BillingViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create': return BillingCreateSerializer
         return BillingSerializer
+    
     def get_queryset(self):
         user = self.request.user
         if user.role in ['Admin', 'Receptionist']: return Billing.objects.all()
@@ -108,20 +115,15 @@ class WardsBedsViewSet(viewsets.ModelViewSet):
         if user.role in ['Admin', 'Doctor', 'Nurse', 'Receptionist']:
             return Wards_Beds.objects.all()
         return Wards_Beds.objects.none()
-
 class UnassignedPatientsView(generics.ListAPIView):
-    serializer_class = PatientSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = PatientSerializer; permission_classes = [IsAuthenticated]
     def get_queryset(self):
         assigned_patient_ids = Wards_Beds.objects.filter(patient__isnull=False).values_list('patient_id', flat=True)
         return Patient.objects.exclude(pk__in=assigned_patient_ids)
-
 class DoctorPatientsView(generics.ListAPIView):
-    serializer_class = PatientSerializer
-    permission_classes = [IsAuthenticated, IsDoctor]
+    serializer_class = PatientSerializer; permission_classes = [IsAuthenticated, IsDoctor]
     def get_queryset(self):
-        doctor = Doctor.objects.get(user=self.request.user)
-        patient_ids = Appointment.objects.filter(doctor=doctor).values_list('patient_id', flat=True).distinct()
+        doctor = Doctor.objects.get(user=self.request.user); patient_ids = Appointment.objects.filter(doctor=doctor).values_list('patient_id', flat=True).distinct()
         return Patient.objects.filter(pk__in=patient_ids)
 class PatientMedicalRecordView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsDoctor]
@@ -129,14 +131,10 @@ class PatientMedicalRecordView(generics.ListCreateAPIView):
         if self.request.method == 'POST': return MedicalRecordCreateSerializer
         return MedicalRecordSerializer
     def get_queryset(self):
-        patient_id = self.kwargs['patient_pk']
-        return MedicalRecord.objects.filter(patient_id=patient_id).order_by('-record_date')
+        patient_id = self.kwargs['patient_pk']; return MedicalRecord.objects.filter(patient_id=patient_id).order_by('-record_date')
     def perform_create(self, serializer):
-        patient_id = self.kwargs['patient_pk']
-        patient = Patient.objects.get(pk=patient_id)
-        doctor = Doctor.objects.get(user=self.request.user)
+        patient_id = self.kwargs['patient_pk']; patient = Patient.objects.get(pk=patient_id); doctor = Doctor.objects.get(user=self.request.user)
         serializer.save(patient=patient, doctor=doctor)
-
 class AnalyticsSummaryView(APIView):
     permission_classes = [IsAdmin]
     def get(self, request, *args, **kwargs):
@@ -144,18 +142,13 @@ class AnalyticsSummaryView(APIView):
         scheduled_appts = Appointment.objects.filter(status='Scheduled').count(); completed_appts = Appointment.objects.filter(status='Completed').count(); cancelled_appts = Appointment.objects.filter(status='Cancelled').count()
         data = { 'user_counts': [{'name': 'Patients', 'count': patient_count}, {'name': 'Doctors', 'count': doctor_count}, {'name': 'Receptionists', 'count': receptionist_count}], 'appointment_status_counts': [{'name': 'Scheduled', 'count': scheduled_appts}, {'name': 'Completed', 'count': completed_appts}, {'name': 'Cancelled', 'count': cancelled_appts}] }
         return Response(data)
-
 class SymptomCheckerView(APIView):
     permission_classes = [IsAuthenticated]
-    model_path = os.path.join(settings.BASE_DIR, 'ml_models', 'disease_predictor.joblib')
-    features_path = os.path.join(settings.BASE_DIR, 'ml_models', 'model_features.joblib')
-    model = joblib.load(model_path)
-    model_features = joblib.load(features_path)
+    model_path = os.path.join(settings.BASE_DIR, 'ml_models', 'disease_predictor.joblib'); features_path = os.path.join(settings.BASE_DIR, 'ml_models', 'model_features.joblib')
+    model = joblib.load(model_path); model_features = joblib.load(features_path)
     def post(self, request, *args, **kwargs):
-        symptoms = request.data.get('symptoms', [])
-        input_vector = [1 if feature in self.model_features else 0 for feature in self.model_features]
-        input_data = np.array(input_vector).reshape(1, -1)
-        prediction = self.model.predict(input_data)[0]
+        symptoms = request.data.get('symptoms', []); input_vector = [1 if feature in self.model_features else 0 for feature in self.model_features]
+        input_data = np.array(input_vector).reshape(1, -1); prediction = self.model.predict(input_data)[0]
         return Response({'predicted_disease': prediction})
     def get(self, request, *args, **kwargs):
         return Response({'available_symptoms': self.model_features})
