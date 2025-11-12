@@ -1,12 +1,19 @@
-# Mark frontend (React) files as detectable
-/frontend/** linguist-detectable=true
-/frontend/** linguist-vendored=false
+# Backend (Python)
+backend/** linguist-detectable=true
+backend/** linguist-vendored=false
 
-# Mark backend (Django) files as detectable
-/backend/** linguist-detectable=true
-/backend/** linguist-vendored=false
+# Frontend (React)
+frontend/src/** linguist-detectable=true
+frontend/src/** linguist-vendored=false
+frontend/public/** linguist-detectable=true
+frontend/public/** linguist-vendored=false
+frontend/package.json linguist-detectable=true
+frontend/package-lock.json linguist-detectable=true
+frontend/tailwind.config.js linguist-detectable=true
+frontend/postcss.config.js linguist-detectable=true
 
-# Exclude environment and configuration files from language stats
+# Exclude node_modules, env, logs
+frontend/node_modules/** linguist-vendored=true
 *.env linguist-detectable=false
 *.env.example linguist-detectable=false
 *.log linguist-detectable=false
