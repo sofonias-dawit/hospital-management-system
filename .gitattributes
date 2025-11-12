@@ -1,2 +1,12 @@
-frontend/** linguist-detectable=true
-backend/** linguist-detectable=true
+# Mark frontend (React) files as detectable
+/frontend/** linguist-detectable=true
+/frontend/** linguist-vendored=false
+
+# Mark backend (Django) files as detectable
+/backend/** linguist-detectable=true
+/backend/** linguist-vendored=false
+
+# Exclude environment and configuration files from language stats
+*.env linguist-detectable=false
+*.env.example linguist-detectable=false
+*.log linguist-detectable=false
